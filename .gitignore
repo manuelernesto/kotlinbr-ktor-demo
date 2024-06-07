@@ -38,3 +38,6 @@ out/
 .idea/
 .kotlin
 .kotlin/
+
+gradle
+gradle/

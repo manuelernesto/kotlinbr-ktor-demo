@@ -33,14 +33,14 @@ fun Application.configureRouting() {
             call.respondText("Movies added to database!", status = HttpStatusCode.Created)
         }
 
-        get("{id}") {
+        get("/movies/{id}") {
             val id = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest)
             val movie = db.find { it.id == id.toInt() } ?: call.respond(HttpStatusCode.NotFound)
             call.respond(movie)
         }
 
 
-        put("{id}") {
+        put("/movies/{id}") {
             val movie = call.receive<Movie>()
             val index = db.indexOfFirst { it.id == movie.id }
             if (index != -1) {
@@ -52,7 +52,7 @@ fun Application.configureRouting() {
         }
 
 
-        delete("{id}") {
+        delete("/movies/{id}") {
             val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
 
             if (db.removeIf { it.id == id.toInt() }) {
