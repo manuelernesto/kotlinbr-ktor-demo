@@ -26,8 +26,6 @@ Accept: application/json
 
 ###
 
-
-
 DELETE http://0.0.0.0:8080/movies/1
 Accept: application/json
 
