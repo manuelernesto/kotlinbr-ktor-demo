@@ -1,0 +1,34 @@
+GET http://0.0.0.0:8080/
+Accept: application/json
+
+###
+GET http://0.0.0.0:8080/movies
+Accept: application/json
+
+###
+
+POST http://0.0.0.0:8080/movies
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Iron Man",
+  "year": 2008
+}
+
+###
+
+
+GET http://0.0.0.0:8080/movies/1
+Accept: application/json
+
+
+
+###
+
+
+
+DELETE http://0.0.0.0:8080/movies/1
+Accept: application/json
+
+###
