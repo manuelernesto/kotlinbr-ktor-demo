@@ -42,7 +42,8 @@ fun Application.configureRouting() {
 
         put("/movies/{id}") {
             val movie = call.receive<Movie>()
-            val index = db.indexOfFirst { it.id == movie.id }
+            val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+            val index = db.indexOfFirst { it.id == id.toInt() }
             if (index != -1) {
                 db[index] = movie
                 call.respondText("Movie successfully updated", status = HttpStatusCode.OK)

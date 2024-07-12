@@ -11,15 +11,25 @@ POST http://0.0.0.0:8080/movies
 Content-Type: application/json
 
 {
-  "id": 1,
-  "title": "Iron Man",
-  "year": 2008
+  "id": 2,
+  "title": "Deadpool & Wolverine",
+  "year": 2024
+}
+
+###
+PUT http://0.0.0.0:8080/movies/2
+Content-Type: application/json
+
+{
+"id": 1,
+"title": "Deadpool & Wolverine",
+"year": 2025
 }
 
 ###
 
 
-GET http://0.0.0.0:8080/movies/1
+GET http://0.0.0.0:8080/movies/2
 Accept: application/json
 
 
