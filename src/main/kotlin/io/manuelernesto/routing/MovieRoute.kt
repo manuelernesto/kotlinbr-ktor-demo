@@ -20,7 +20,6 @@ import kotlin.text.toInt
  * @version 1.0
  */
 
-
 fun Route.movieRouting() {
     get("/movies") {
         if (db.isEmpty())
