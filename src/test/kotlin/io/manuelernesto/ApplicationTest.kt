@@ -1,10 +1,10 @@
-package com.example
+package io.manuelernesto
 
-import com.example.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import io.manuelernesto.plugins.configureRouting
 import kotlin.test.*
 
 class ApplicationTest {
