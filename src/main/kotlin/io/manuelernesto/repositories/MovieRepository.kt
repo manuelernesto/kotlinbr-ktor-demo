@@ -27,9 +27,7 @@ class MovieRepository {
             it[year] = movie.year
         }
 
-        inserted.resultedValues?.singleOrNull()?.let {
-            resultRowToMovie(it)
-        }
+        inserted.resultedValues?.singleOrNull()?.toMovie()
     }
 
     suspend fun saveWithAuthor(movie: Movie): Movie? = dbQuery {
@@ -39,21 +37,20 @@ class MovieRepository {
             it[actor] = movie.actor?.id
         }
 
-        inserted.resultedValues?.singleOrNull()?.let {
-            resultRowToMovieWithoutActor(it)
-        }
+        inserted.resultedValues?.singleOrNull()?.toMovie()
     }
 
     suspend fun getMovies() = dbQuery {
-        Movies.selectAll().map { resultRowToMovie(it) }
+        (Movies innerJoin Actors).selectAll().map { it.toMovieWithActor() }
     }
 
-    suspend fun getMoviesWithOrder(sortby: String?, direction: String?) = dbQuery {
-        (Movies innerJoin Actors).selectAll().orderBy(getSortby(sortby), getDirection(direction)).map { resultRowToMovie(it) }
+    suspend fun getMoviesWithOrder(sortBy: String?, direction: String?) = dbQuery {
+        (Movies innerJoin Actors).selectAll().orderBy(getSortBy(sortBy), getDirection(direction))
+            .map { it.toMovieWithActor() }
     }
 
     suspend fun getMovie(id: Int): Movie? = dbQuery {
-        Movies.selectAll().where { Movies.id eq id }.map { resultRowToMovie(it) }.singleOrNull()
+        (Movies innerJoin Actors).selectAll().where { Movies.id eq id }.map { it.toMovieWithActor() }.singleOrNull()
     }
 
     suspend fun delete(id: Int) = dbQuery {
@@ -67,7 +64,7 @@ class MovieRepository {
         }
     }
 
-    private fun getSortby(sortedTitle: String?) = when (sortedTitle) {
+    private fun getSortBy(sortedTitle: String?) = when (sortedTitle) {
         "title" -> Movies.title
         "year" -> Movies.year
         else -> Movies.id
@@ -78,20 +75,22 @@ class MovieRepository {
         else -> SortOrder.DESC
     }
 
-    private fun resultRowToMovie(resultRow: ResultRow): Movie = Movie(
-        id = resultRow[Movies.id],
-        title = resultRow[Movies.title],
-        year = resultRow[Movies.year],
+
+    private fun ResultRow.toMovie() = Movie(
+        id = this[Movies.id],
+        title = this[Movies.title],
+        year = this[Movies.year]
+    )
+
+    private fun ResultRow.toMovieWithActor() = Movie(
+        id = this[Movies.id],
+        title = this[Movies.title],
+        year = this[Movies.year],
         actor = Actor(
-            id = resultRow[Actors.id].value,
-            name = resultRow[Actors.name]
+            id = this[Actors.id].value,
+            name = this[Actors.name]
         )
     )
 
-    private fun resultRowToMovieWithoutActor(resultRow: ResultRow): Movie = Movie(
-        id = resultRow[Movies.id],
-        title = resultRow[Movies.title],
-        year = resultRow[Movies.year]
-    )
 
 }

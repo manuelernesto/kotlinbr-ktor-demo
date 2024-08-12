@@ -11,7 +11,7 @@ POST http://0.0.0.0:8080/movies
 Content-Type: application/json
 
 {
-  "title": "Avenger 1",
+  "title": "Avenger 10",
   "year": 2025,
   "actor": {
     "id": 1
@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 
 
-GET http://0.0.0.0:8080/movies/3
+GET http://0.0.0.0:8080/movies/2
 Accept: application/json
 
 
