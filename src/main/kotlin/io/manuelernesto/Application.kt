@@ -3,6 +3,7 @@ package io.manuelernesto
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.manuelernesto.db.DBFactory
 import io.manuelernesto.plugins.configureRouting
 import io.manuelernesto.plugins.configureSerialization
 
@@ -14,4 +15,6 @@ fun main() {
 fun Application.module() {
     configureSerialization()
     configureRouting()
+
+    DBFactory.init()
 }

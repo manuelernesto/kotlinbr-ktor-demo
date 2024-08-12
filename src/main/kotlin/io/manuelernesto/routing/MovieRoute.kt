@@ -11,7 +11,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.manuelernesto.model.Movie
-import io.manuelernesto.model.db
+import io.manuelernesto.repositories.MovieRepository
 import kotlin.text.toInt
 
 /**
@@ -20,32 +20,39 @@ import kotlin.text.toInt
  * @version 1.0
  */
 
-fun Route.movieRouting() {
+fun Route.movieRouting(repository: MovieRepository) {
     get("/movies") {
-        if (db.isEmpty())
+        val sortby = call.request.queryParameters["sortby"]
+        val direction = call.request.queryParameters["direction"]
+
+        val response = repository.getMoviesWithOrder(sortby?.lowercase(), direction?.lowercase())
+
+        if (response.isEmpty())
             call.respondText("No movies in database!")
         else
-            call.respond(db)
+            call.respond(response)
     }
 
     post("/movies") {
         val movie = call.receive<Movie>()
-        db.add(movie)
-        call.respondText("Movies added to database!", status = HttpStatusCode.Created)
+        val response = repository.saveWithAuthor(movie)
+        call.respond(status = HttpStatusCode.Created, message = response as Any)
     }
 
     get("/movies/{id}") {
         val id = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-        val movie = db.find { it.id == id.toInt() } ?: call.respond(HttpStatusCode.NotFound)
+        val movie = repository.getMovie(id.toInt()) ?: call.respond(HttpStatusCode.NotFound)
         call.respond(movie)
     }
 
 
     put("/movies/{id}") {
         val movie = call.receive<Movie>()
-        val index = db.indexOfFirst { it.id == movie.id }
-        if (index != -1) {
-            db[index] = movie
+        val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
+
+        val response = repository.update(id.toInt(), movie)
+
+        if (response > 0) {
             call.respondText("Movie successfully updated", status = HttpStatusCode.OK)
         } else {
             call.respondText("Movie not found!", status = HttpStatusCode.NotFound)
@@ -56,7 +63,7 @@ fun Route.movieRouting() {
     delete("/movies/{id}") {
         val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest)
 
-        if (db.removeIf { it.id == id.toInt() }) {
+        if (repository.delete(id.toInt()) > 0) {
             call.respondText("Movie deleted", status = HttpStatusCode.NoContent)
         } else {
             call.respondText("Movie not found!", status = HttpStatusCode.NotFound)
